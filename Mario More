@@ -1,0 +1,38 @@
+#include <cs50.h>
+#include <stdio.h>
+
+int main(void)
+{
+    int h;
+    int d;
+//gets user input for height rejecting answers outside of 1-8
+    do
+    {
+        h = get_int("Height: ");
+    }
+    while (h > 8 || h < 1);
+//sets A to 0, then for as long as A < H it repeats the loop and increments upwards, determining the height of the pyramid by not exceeding the user's height setting
+    for (int a = 0; a < h; a++)
+    {
+//set B to 1 less than H, and for as long as B > A it repeats creating the appropriate number of spaces since the number of spaces on a given line should equal 1 less than A
+        for (int b = h - 1; b > a; b--)
+        {
+            printf(" ");
+        }
+//set C to 0, then for as long as C is less than or equal to A it keeps printing #s, thus for a given line (e.g. line 1) it prints the same number of hashes since A is set to that number
+        for (int c = 0; c <= a; c++)
+        {
+            printf("#");
+        }
+//prints 2 spaces in between pyramids for each row
+        {
+            printf("  ");
+        }
+//prints the same number of hashes as in the previous pyramid for each row, creating a second mirrored pyramid after the space in the middle
+        for (int c = 0; c <= a; c++)
+        {
+            printf("#");
+        }
+        printf("\n");
+    }
+}
