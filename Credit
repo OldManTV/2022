@@ -1,0 +1,100 @@
+#include <cs50.h>
+#include <stdio.h>
+long get_checksum(long ccnumber);
+int main(void)
+{
+    // Ask the user for the credit card number
+    long ccnumber = get_long("Number: ");
+    // Determines how many digits the credit card number has
+    int digits = 0;
+    long n = ccnumber;
+    while (n > 0)
+    {
+        n = n / 10;
+        digits++;
+    }
+    //Does checksum calculation
+    long checksumtotal = get_checksum(ccnumber);
+
+    //checks if the ccnumber is valid based on the result of the checksum calculation, number of digits, and starting digits, and outputs the credit card type or states if it's invalid
+    if (checksumtotal % 10 == 0)
+    {
+        if (digits >= 13 && digits <= 16)
+        {
+            //Checks if the card is a 13 digit Visa
+            if ((digits == 13) && (ccnumber / 1000000000000 == 4))
+            {
+                printf("VISA\n");
+            }
+            //Checks if the card is an American Express
+            if (digits == 15)
+            {
+                if ((ccnumber / 10000000000000 == 34) || (ccnumber / 10000000000000 == 37))
+                {
+                    printf("AMEX\n");
+                }
+                else
+                {
+                    printf("INVALID\n");
+                }
+            }
+            //Checks if the card is a Mastercard or 16 digit Visa
+            if (digits == 16)
+            {
+                if ((ccnumber / 100000000000000 >= 51) && (ccnumber / 100000000000000 <= 55))
+                {
+                    printf("MASTERCARD\n");
+                }
+                else
+                {
+                    printf("INVALID\n");
+                }
+                if (ccnumber / 1000000000000000 == 4)
+                {
+                    printf("VISA\n");
+                }
+            }
+        }
+        else
+        {
+            printf("INVALID\n");
+        }
+    }
+    else
+    {
+        printf("INVALID\n");
+    }
+}
+
+long get_checksum(long ccnumber)
+{
+    long checksumrunning = 0;
+    long checksumtotal = 0;
+    do
+    {
+        //gets the number of the first digit, then removes that whole digit place from the ccnumber, and adds it to the total
+        checksumrunning = ccnumber % 10;
+        ccnumber = (ccnumber - checksumrunning) / 10;
+        checksumtotal = checksumtotal + checksumrunning;
+
+        //gets the number of the next digit, doubles it, adds the sum of the products digits to the total, then removes that whole digit place from the ccnumber if ccnumber is larger than 0
+        if (ccnumber > 0)
+        {
+            checksumrunning = (ccnumber % 10) * 2;
+            if (checksumrunning >= 10)
+            {
+                checksumtotal = checksumtotal + (checksumrunning % 10);
+                checksumtotal = checksumtotal + ((checksumrunning - (checksumrunning % 10)) / 10);
+                ccnumber = (ccnumber - (checksumrunning / 2)) / 10;
+            }
+            else
+            {
+                ccnumber = (ccnumber - (checksumrunning / 2)) / 10;
+                checksumtotal = checksumtotal + checksumrunning;
+            }
+        }
+    }
+    //stops the process after all the digits of the ccnumber have been used up
+    while (ccnumber > 0);
+    return checksumtotal;
+}
