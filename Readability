@@ -1,0 +1,80 @@
+#include <ctype.h>
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+
+int main(void)
+{
+    //letter counter
+    float l = 0;
+    //word counter
+    float w = 0;
+    //sentence counter;
+    float s = 0;
+    //character check, when 1, it checks the first letter it finds, increments the word counter, and goes back to 0, and only goes back to 1 when a space occurs, allowing sensing of the next word
+    int cc = 1;
+    //sentence check, same as character check, but it only resets to 1 after sentence ending punctuation
+    int sc = 1;
+
+    //gets string of text from user
+    string text = get_string("Text: ");
+
+    for (int i = strlen(text); i >= 0; i--)
+    {
+        //makes a count of how many letters there are in the user's input
+        if (isalpha(text[i]))
+        {
+            l++;
+        }
+
+        //checks if there is a character (first letter of a word) and increments word counter by 1, then turns off this check via the word check until a space occurs
+        if (cc == 1 && isalpha(text[i]))
+        {
+            w++;
+            cc = 0;
+        }
+
+        //checks if there is a character (first letter of a sentence) and increments sentence counter by 1, then turns off the sentence check until sentence ending punctuation occurs
+        if (sc == 1 && isalpha(text[i]))
+        {
+            s++;
+            sc = 0;
+        }
+
+        //When a space occurs it turns on cc allowing it to once again count a word the first time after spaces that it encounters a character
+        if (text[i] == 32)
+        {
+            cc = 1;
+        }
+
+        //When a question mark, period, or exclamation mark occurs it turns on sc allowing it to once again count the first time after sentence ending punctions that it encounters a character
+        if (text[i] == 33 || text[i] == 46 || text[i] == 63)
+        {
+            sc = 1;
+        }
+    }
+
+    //(formula l) calulcates average number of letters per 100 words of text
+    float forml = l / w * 100;
+
+    //(formula s) calculates average number of sentences per 100 words in the text
+    float forms = s / w * 100;
+
+    //(formula coleman-liau index) calculates the final index score
+    float formcli = 0.0588 * forml - 0.296 * forms - 15.8;
+
+    //prints grade level as a float without any decimal places, and tells the user if the reading level is above or below grade 16 or 1 respectively
+    if (formcli > 16)
+    {
+        printf("Grade 16+\n");
+    }
+    if (formcli < 1)
+    {
+        printf("Before Grade 1\n");
+    }
+    if (formcli > 1 && formcli < 16)
+    {
+        printf("Grade %.0f\n", round(formcli));
+    }
+}
