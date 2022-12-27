@@ -1,0 +1,79 @@
+#include <cs50.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int cipher(char c, string s);
+
+int main(int argc, string argv[])
+{
+    //checks if the user inputs a single command line argument, and if they don't, tells them to input this, and returns 1
+    if (argc != 2)
+    {
+        printf("Usage: ./substitution key\n");
+        return 1;
+    }
+
+    //checks to see if the command line argument key is precisely 26 characters long, and if it isn't it reminds the user to do so, and returns 1
+    if (strlen(argv[1]) != 26)
+    {
+        printf("Key must contain 26 characters.\n");
+        return 1;
+    }
+
+    //repeats these actions for the length of the key (26 characters), checking each character in the key one by one (the i'th character)
+    for (int i = 0; i < 26; i++)
+    {
+        //checks that the i'th character in the key is a letter
+        if (isalpha(argv[1][i]) == 0)
+        {
+            printf("Key must contain only letters, and one of each letter in the alphabet.\n");
+            return 1;
+        }
+        //sets check to 0, then checks if the i'th character is the same as any other characters in the key, and if so, it increments check up by 1
+        int check = 0;
+        for (int j = 0; j < 26; j++)
+        {
+            if (argv[1][i] == argv[1][j])
+            {
+                check++;
+            }
+            //since it is expected to only find one other character the same in the key (itself), if check is more than 1, there are multiples of a letter in the key, and an error message is given
+            if (check > 1)
+            {
+                printf("Key must contain only letters, and one of each letter in the alphabet.\n");
+                return 1;
+            }
+        }
+    }
+
+    //TODOTODOTODOobtains plaintext input from the user, then prints out the enciphered text according to the previously provided key
+    string text = get_string("plaintext: ");
+    printf("ciphertext: ");
+    for (int i = 0; i < strlen(text); i++)
+    {
+        int rc = cipher(text[i], argv[1]);
+        printf("%c", rc);
+
+    }
+    //prints goes to a new line following the printing of the enciphered text
+    printf("\n");
+}
+
+//takes in key, and a char from the plaintext, reduces it down do the char number in the array that it needs to be converted to (saved as d), converts it, then restores case sensitivity
+int cipher(char c, string s)
+{
+    if (islower(c))
+    {
+        int d = c - 97;
+        c = s[d];
+        c = tolower(c);
+    }
+    if (isupper(c))
+    {
+        int d = c - 65;
+        c = s[d];
+        c = toupper(c);
+    }
+    return c;
+}
